@@ -4,6 +4,7 @@ import { For, JSX, ParentProps, Suspense } from "solid-js";
 import "./app.css";
 import { House, Info, PanelLeftOpen } from "lucide-solid";
 import { Dynamic } from "solid-js/web";
+import ThemeSelector from "./components/ThemeSelector";
 
 export default function App() {
   return (
@@ -37,7 +38,9 @@ function Layout(props: LayoutProps) {
         {/* <!-- Navbar --> */}
         {props.header}
         {/* <!-- Page content here --> */}
-        <main class="flex-1 overflow-y-auto p-4">{props.content}</main>
+        <main class="flex-1 overflow-y-auto p-4 bg-base-100 text-base-content">
+          {props.content}
+        </main>
       </div>
 
       <div class="drawer-side is-drawer-close:overflow-visible z-50">
@@ -46,7 +49,7 @@ function Layout(props: LayoutProps) {
           aria-label="close sidebar"
           class="drawer-overlay"
         ></label>
-        <div class="flex min-h-full flex-col items-start bg-base-200 transition-all duration-300 ease-in-out is-drawer-close:w-14 is-drawer-open:w-64 overflow-hidden">
+        <div class="flex min-h-full flex-col items-start bg-base-200 border-r border-base-content/10 transition-all duration-300 ease-in-out is-drawer-close:w-14 is-drawer-open:w-64 overflow-hidden">
           {/* <!-- Sidebar content here --> */}
           {props.sidebar}
         </div>
@@ -57,16 +60,20 @@ function Layout(props: LayoutProps) {
 
 function Header() {
   return (
-    <nav class="navbar sticky top-0 z-20 w-full bg-base-300 shadow-sm">
-      <label
-        for="my-drawer-4"
-        aria-label="open sidebar"
-        class="btn btn-square btn-ghost"
-      >
-        {/* <!-- Sidebar toggle icon --> */}
-        <PanelLeftOpen class="size-4" />
-      </label>
-      <div class="px-4">Navbar Title</div>
+    <nav class="navbar sticky top-0 z-20 w-full bg-base-300 border-b border-base-content/10 shadow-sm px-4 py-0 flex flex-row items-center">
+      <div class="w-full flex flex-row items-center h-full">
+        <label
+          for="my-drawer-4"
+          aria-label="open sidebar"
+          class="btn btn-square btn-ghost"
+        >
+          {/* <!-- Sidebar toggle icon --> */}
+          <PanelLeftOpen class="size-4" />
+        </label>
+        <div class="divider divider-horizontal w-0"></div>
+        <div class="px-4">Navbar Title</div>
+      </div>
+      <ThemeSelector />
     </nav>
   );
 }
