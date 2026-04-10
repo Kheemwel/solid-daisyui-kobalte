@@ -1,20 +1,110 @@
-import { Router } from "@solidjs/router";
+import { Router, useNavigate } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
-import { Suspense } from "solid-js";
-import Nav from "~/components/Nav";
+import { For, JSX, ParentProps, Suspense } from "solid-js";
 import "./app.css";
+import { House, Info, PanelLeftOpen } from "lucide-solid";
+import { Dynamic } from "solid-js/web";
 
 export default function App() {
   return (
     <Router
-      root={props => (
+      root={(props) => (
         <>
-          <Nav />
-          <Suspense>{props.children}</Suspense>
+          <Layout
+            header={<Header />}
+            sidebar={<Sidebar />}
+            content={<Suspense>{props.children}</Suspense>}
+          ></Layout>
         </>
       )}
     >
       <FileRoutes />
     </Router>
+  );
+}
+
+interface LayoutProps {
+  header: JSX.Element;
+  sidebar: JSX.Element;
+  content: JSX.Element;
+}
+
+function Layout(props: LayoutProps) {
+  return (
+    <div class="drawer lg:drawer-open h-screen overflow-hidden ">
+      <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
+      <div class="drawer-content flex flex-col h-screen overflow-hidden ">
+        {/* <!-- Navbar --> */}
+        {props.header}
+        {/* <!-- Page content here --> */}
+        <main class="flex-1 overflow-y-auto p-4">{props.content}</main>
+      </div>
+
+      <div class="drawer-side is-drawer-close:overflow-visible z-50">
+        <label
+          for="my-drawer-4"
+          aria-label="close sidebar"
+          class="drawer-overlay"
+        ></label>
+        <div class="flex min-h-full flex-col items-start bg-base-200 transition-all duration-300 ease-in-out is-drawer-close:w-14 is-drawer-open:w-64 overflow-hidden">
+          {/* <!-- Sidebar content here --> */}
+          {props.sidebar}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Header() {
+  return (
+    <nav class="navbar sticky top-0 z-20 w-full bg-base-300 shadow-sm">
+      <label
+        for="my-drawer-4"
+        aria-label="open sidebar"
+        class="btn btn-square btn-ghost"
+      >
+        {/* <!-- Sidebar toggle icon --> */}
+        <PanelLeftOpen class="size-4" />
+      </label>
+      <div class="px-4">Navbar Title</div>
+    </nav>
+  );
+}
+
+function Sidebar() {
+  const navigate = useNavigate();
+
+  const links = [
+    { title: "Home", url: "/", icon: House },
+    { title: "About", url: "/about", icon: Info },
+  ];
+
+  return (
+    <>
+      <div class="p-4 flex flex-row items-center gap-3 w-full">
+        <span class="text-xl">🔵</span>
+        <span class="is-drawer-close:hidden text-lg font-bold whitespace-nowrap overflow-hidden">
+          SolidStart DaisyUI
+        </span>
+      </div>
+      <ul class="menu w-full grow">
+        <For each={links}>
+          {(item) => (
+            <li>
+              <button
+                class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                data-tip={item.title}
+                onclick={() => navigate(item.url)}
+              >
+                <Dynamic component={item.icon} class="size-4" />
+                <span class="is-drawer-close:hidden whitespace-nowrap">
+                  {item.title}
+                </span>
+              </button>
+            </li>
+          )}
+        </For>
+      </ul>
+    </>
   );
 }
