@@ -49,7 +49,7 @@ function Layout(props: LayoutProps) {
           aria-label="close sidebar"
           class="drawer-overlay"
         ></label>
-        <div class="flex min-h-full flex-col items-start bg-base-200 border-r border-base-content/10 transition-all duration-300 ease-in-out is-drawer-close:w-14 is-drawer-open:w-64 overflow-hidden">
+        <div class="flex min-h-full flex-col items-start bg-base-200 border-r border-base-content/10 transition-all duration-300 ease-in-out is-drawer-close:w-14 is-drawer-open:w-64 is-drawer-close:overflow-visible overflow-hidden">
           {/* <!-- Sidebar content here --> */}
           {props.sidebar}
         </div>
@@ -97,21 +97,37 @@ function Sidebar() {
       <ul class="menu w-full grow">
         <For each={links}>
           {(item) => (
-            <li>
-              <button
-                class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                data-tip={item.title}
-                onclick={() => navigate(item.url)}
-              >
-                <Dynamic component={item.icon} class="size-4" />
-                <span class="is-drawer-close:hidden whitespace-nowrap">
-                  {item.title}
-                </span>
-              </button>
-            </li>
+            <SidebarItem
+              title={item.title}
+              icon={item.icon}
+              onClick={() => navigate(item.url)}
+            />
           )}
         </For>
       </ul>
     </>
+  );
+}
+
+interface SidebarItemProps {
+  title: string;
+  icon: any;
+  onClick: () => void;
+}
+
+function SidebarItem(props: SidebarItemProps) {
+  return (
+    <li>
+      <button
+        class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+        data-tip={props.title}
+        onclick={props.onClick}
+      >
+        <Dynamic component={props.icon} class="size-4" />
+        <span class="is-drawer-close:hidden whitespace-nowrap">
+          {props.title}
+        </span>
+      </button>
+    </li>
   );
 }
