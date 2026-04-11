@@ -1,4 +1,4 @@
-import { Router, useNavigate } from "@solidjs/router";
+import { Router, useLocation, useNavigate } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import { For, JSX, Suspense, createSignal, createEffect } from "solid-js";
 import "./app.css";
@@ -48,7 +48,7 @@ function Layout(props: { children: JSX.Element }) {
     <div class="flex h-screen overflow-hidden bg-base-100 text-base-content">
       {/* === DESKTOP SIDEBAR (collapsible) === */}
       <div
-        class={`hidden md:block border-r border-base-content/10 bg-base-200 transition-all duration-300 ease-in-out overflow-hidden ${isCollapsed() ? "w-16" : "w-64"}`}
+        class={`hidden md:block border-r border-base-content/10 bg-base-200 transition-all duration-300 ease-in-out overflow-hidden ${isCollapsed() ? "w-20" : "w-64"}`}
       >
         <SidebarContent
           isOpen={!isCollapsed()}
@@ -124,6 +124,7 @@ function SidebarContent(props: {
   isMobile: boolean;
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const links = [
     { title: "Home", url: "/", icon: House },
@@ -138,13 +139,13 @@ function SidebarContent(props: {
   return (
     <>
       {/* Logo Area */}
-      <div class="h-16 px-4 flex items-center border-b border-base-content/10 overflow-hidden">
+      <div class="h-16 px-2 lg:px-6 flex items-center border-b border-base-content/10 overflow-hidden ">
         <span class="text-2xl shrink-0">🔵</span>
 
         <div
-          class={`flex items-center overflow-hidden transition-all duration-300 ease-in-out ${props.isOpen ? "w-40 opacity-100 translate-x-0 ml-3" : "w-0 opacity-0 -translate-x-2 pointer-events-none"}`}
+          class={`w-full flex items-center overflow-hidden transition-all duration-300 ease-in-out ${props.isOpen ? "w-40 opacity-100 translate-x-0 ml-3" : "w-0 opacity-0 -translate-x-2 pointer-events-none"}`}
         >
-          <span class="text-lg font-bold whitespace-nowrap">
+          <span class="text-md lg:text-lg font-bold whitespace-nowrap">
             SolidStart App
           </span>
         </div>
@@ -167,6 +168,7 @@ function SidebarContent(props: {
             <SidebarItem
               title={item.title}
               icon={item.icon}
+              isActive={location.pathname === item.url}
               onClick={() => handleLinkClick(item.url)}
               isOpen={props.isOpen}
               isMobile={props.isMobile}
@@ -182,6 +184,7 @@ function SidebarItem(props: {
   title: string;
   icon: any;
   onClick: () => void;
+  isActive: boolean;
   isOpen: boolean;
   isMobile: boolean;
 }) {
@@ -194,23 +197,24 @@ function SidebarItem(props: {
         disabled={props.isOpen || props.isMobile}
       >
         <Tooltip.Trigger
-          as="button"
           onClick={props.onClick}
-          class="flex w-full items-center gap-3 px-4 py-3 rounded-btn hover:bg-base-100 active:bg-base-200 transition-all text-left"
+          class={`btn ${props.isActive ? "bg-primary text-primary-content" : "hover:bg-neutral"}`}
         >
-          <Dynamic component={props.icon} class="size-4 shrink-0" />
+          <Dynamic
+            component={props.icon}
+            class={`transition-all duration-300 ease-in-out ${props.isOpen ? "size-4" : "size-5"}`}
+          />
 
-          <div
-            class={`flex items-center overflow-hidden transition-all duration-300 ease-in-out ${props.isOpen || props.isMobile ? "w-40 opacity-100 translate-x-0 ml-3" : "w-0 opacity-0 -translate-x-2 pointer-events-none"}`}
+          <span
+            class={`whitespace-nowrap  flex items-center overflow-hidden transition-all duration-300 ease-in-out ${props.isOpen || props.isMobile ? "w-40 opacity-100 translate-x-0 ml-3" : "w-0 opacity-0 -translate-x-2 pointer-events-none "}`}
           >
-            <span class="whitespace-nowrap text-base-content">
-              {props.title}
-            </span>
-          </div>
+            {props.title}
+          </span>
         </Tooltip.Trigger>
 
         <Tooltip.Portal>
           <Tooltip.Content class="tooltip tooltip-right bg-base-300 text-base-content px-3 py-1.5 rounded shadow-md">
+            <Tooltip.Arrow />
             {props.title}
           </Tooltip.Content>
         </Tooltip.Portal>
