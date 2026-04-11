@@ -2,7 +2,7 @@ import { Router, useLocation, useNavigate } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import { For, JSX, Suspense, createSignal, createEffect } from "solid-js";
 import "./app.css";
-import { House, Info, PanelLeftOpen, X } from "lucide-solid";
+import { House, Info, MonitorPlay, PanelLeftOpen, X } from "lucide-solid";
 import { Dynamic } from "solid-js/web";
 import ThemeSelector from "./shared/components/ThemeSelector";
 
@@ -129,6 +129,7 @@ function SidebarContent(props: {
   const links = [
     { title: "Home", url: "/", icon: House },
     { title: "About", url: "/about", icon: Info },
+    { title: "Button", url: "/demo/button", icon: MonitorPlay },
   ];
 
   const handleLinkClick = (url: string) => {
