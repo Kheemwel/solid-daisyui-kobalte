@@ -1,22 +1,24 @@
 import { Router, useNavigate } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
-import { For, JSX, ParentProps, Suspense } from "solid-js";
+import { For, JSX, Suspense, createSignal, createEffect } from "solid-js";
 import "./app.css";
-import { House, Info, PanelLeftOpen } from "lucide-solid";
+import { House, Info, PanelLeftOpen, X } from "lucide-solid";
 import { Dynamic } from "solid-js/web";
 import ThemeSelector from "./components/ThemeSelector";
+
+import { Dialog } from "@kobalte/core/dialog";
+import { Tooltip } from "@kobalte/core/tooltip";
+
+import { createIsMobile } from "~/shared/hooks/is-mobile"; // adjust path if needed
+import { Button } from "@kobalte/core/button";
 
 export default function App() {
   return (
     <Router
       root={(props) => (
-        <>
-          <Layout
-            header={<Header />}
-            sidebar={<Sidebar />}
-            content={<Suspense>{props.children}</Suspense>}
-          ></Layout>
-        </>
+        <Layout>
+          <Suspense>{props.children}</Suspense>
+        </Layout>
       )}
     >
       <FileRoutes />
@@ -24,61 +26,103 @@ export default function App() {
   );
 }
 
-interface LayoutProps {
-  header: JSX.Element;
-  sidebar: JSX.Element;
-  content: JSX.Element;
-}
+function Layout(props: { children: JSX.Element }) {
+  const isMobile = createIsMobile();
+  const [isCollapsed, setIsCollapsed] = createSignal(false); // Desktop collapse state
+  const [isDrawerOpen, setIsDrawerOpen] = createSignal(false); // Mobile drawer
 
-function Layout(props: LayoutProps) {
+  // Close mobile drawer when switching to desktop
+  createEffect(() => {
+    if (!isMobile()) setIsDrawerOpen(false);
+  });
+
+  const toggleSidebar = () => {
+    if (isMobile()) {
+      setIsDrawerOpen((prev) => !prev);
+    } else {
+      setIsCollapsed((prev) => !prev);
+    }
+  };
+
   return (
-    <div class="drawer lg:drawer-open h-screen overflow-hidden ">
-      <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
-      <div class="drawer-content flex flex-col h-screen overflow-hidden ">
-        {/* <!-- Navbar --> */}
-        {props.header}
-        {/* <!-- Page content here --> */}
-        <main class="flex-1 overflow-y-auto p-4 bg-base-100 text-base-content">
-          {props.content}
-        </main>
+    <div class="flex h-screen overflow-hidden bg-base-100 text-base-content">
+      {/* === DESKTOP SIDEBAR (collapsible) === */}
+      <div
+        class={`hidden md:block border-r border-base-content/10 bg-base-200 transition-all duration-300 ease-in-out overflow-hidden ${isCollapsed() ? "w-16" : "w-64"}`}
+      >
+        <SidebarContent
+          isOpen={!isCollapsed()}
+          onToggle={toggleSidebar}
+          onNavigate={() => {}} // no-op on desktop
+          isMobile={false}
+        />
       </div>
 
-      <div class="drawer-side is-drawer-close:overflow-visible z-50">
-        <label
-          for="my-drawer-4"
-          aria-label="close sidebar"
-          class="drawer-overlay"
-        ></label>
-        <div class="flex min-h-full flex-col items-start bg-base-200 border-r border-base-content/10 transition-all duration-300 ease-in-out is-drawer-close:w-14 is-drawer-open:w-64 is-drawer-close:overflow-visible overflow-hidden">
-          {/* <!-- Sidebar content here --> */}
-          {props.sidebar}
-        </div>
+      {/* === MOBILE DRAWER === */}
+      <Dialog open={isDrawerOpen()} onOpenChange={setIsDrawerOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay class="fixed inset-0 bg-black/60 z-50 data-closed:animate-fade-out data-expanded:animate-fade-in" />
+          <Dialog.Content class="fixed inset-y-0 left-0 z-50 w-64 bg-base-200 border-r border-base-content/10 shadow-2xl overflow-hidden focus:outline-none data-closed:animate-drawer-out data-expanded:animate-drawer-in">
+            <SidebarContent
+              isOpen={true}
+              onToggle={toggleSidebar}
+              onNavigate={() => setIsDrawerOpen(false)}
+              isMobile={true}
+            />
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog>
+
+      {/* === MAIN CONTENT === */}
+      <div class="flex flex-1 flex-col overflow-hidden">
+        <Header
+          onToggle={toggleSidebar}
+          isMobile={isMobile()}
+          isCollapsed={isCollapsed()}
+        />
+        <main class="flex-1 overflow-y-auto p-4">{props.children}</main>
       </div>
     </div>
   );
 }
 
-function Header() {
+function Header(props: {
+  onToggle: () => void;
+  isMobile: boolean;
+  isCollapsed: boolean;
+}) {
   return (
-    <nav class="navbar sticky top-0 z-20 w-full bg-base-300 border-b border-base-content/10 shadow-sm px-4 py-0 flex flex-row items-center">
-      <div class="w-full flex flex-row items-center h-full">
-        <label
-          for="my-drawer-4"
-          aria-label="open sidebar"
+    <nav class="navbar sticky top-0 z-20 bg-base-300 border-b border-base-content/10 shadow-sm px-4 py-0 h-16 flex items-center">
+      <div class="flex w-full items-center h-14">
+        <button
+          onClick={props.onToggle}
           class="btn btn-square btn-ghost"
+          aria-label={
+            props.isMobile
+              ? "Open menu"
+              : props.isCollapsed
+                ? "Expand sidebar"
+                : "Collapse sidebar"
+          }
         >
-          {/* <!-- Sidebar toggle icon --> */}
           <PanelLeftOpen class="size-4" />
-        </label>
-        <div class="divider divider-horizontal w-0"></div>
-        <div class="px-4">Navbar Title</div>
+        </button>
+
+        <div class="divider divider-horizontal w-0" />
+        <div class="px-4 text-lg font-medium">Navbar Title</div>
       </div>
+
       <ThemeSelector />
     </nav>
   );
 }
 
-function Sidebar() {
+function SidebarContent(props: {
+  isOpen: boolean;
+  onToggle: () => void;
+  onNavigate: () => void;
+  isMobile: boolean;
+}) {
   const navigate = useNavigate();
 
   const links = [
@@ -86,21 +130,46 @@ function Sidebar() {
     { title: "About", url: "/about", icon: Info },
   ];
 
+  const handleLinkClick = (url: string) => {
+    navigate(url);
+    if (props.isMobile) props.onNavigate(); // close drawer on mobile
+  };
+
   return (
     <>
-      <div class="p-4 flex flex-row items-center gap-3 w-full">
-        <span class="text-xl">🔵</span>
-        <span class="is-drawer-close:hidden text-lg font-bold whitespace-nowrap overflow-hidden">
-          SolidStart DaisyUI
-        </span>
+      {/* Logo Area */}
+      <div class="h-16 px-4 flex items-center border-b border-base-content/10 overflow-hidden">
+        <span class="text-2xl shrink-0">🔵</span>
+
+        <div
+          class={`flex items-center overflow-hidden transition-all duration-300 ease-in-out ${props.isOpen ? "w-40 opacity-100 translate-x-0 ml-3" : "w-0 opacity-0 -translate-x-2 pointer-events-none"}`}
+        >
+          <span class="text-lg font-bold whitespace-nowrap">
+            SolidStart App
+          </span>
+        </div>
+
+        {props.isMobile && (
+          <Button
+            onClick={props.onToggle}
+            class="ml-auto btn btn-square btn-ghost btn-sm"
+            aria-label="Close menu"
+          >
+            <X class="size-4" />
+          </Button>
+        )}
       </div>
-      <ul class="menu w-full grow">
+
+      {/* Menu */}
+      <ul class="menu w-full flex-1 p-2">
         <For each={links}>
           {(item) => (
             <SidebarItem
               title={item.title}
               icon={item.icon}
-              onClick={() => navigate(item.url)}
+              onClick={() => handleLinkClick(item.url)}
+              isOpen={props.isOpen}
+              isMobile={props.isMobile}
             />
           )}
         </For>
@@ -109,25 +178,43 @@ function Sidebar() {
   );
 }
 
-interface SidebarItemProps {
+function SidebarItem(props: {
   title: string;
   icon: any;
   onClick: () => void;
-}
-
-function SidebarItem(props: SidebarItemProps) {
+  isOpen: boolean;
+  isMobile: boolean;
+}) {
   return (
     <li>
-      <button
-        class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-        data-tip={props.title}
-        onclick={props.onClick}
+      <Tooltip
+        placement="right"
+        openDelay={100}
+        closeDelay={0}
+        disabled={props.isOpen || props.isMobile}
       >
-        <Dynamic component={props.icon} class="size-4" />
-        <span class="is-drawer-close:hidden whitespace-nowrap">
-          {props.title}
-        </span>
-      </button>
+        <Tooltip.Trigger
+          as="button"
+          onClick={props.onClick}
+          class="flex w-full items-center gap-3 px-4 py-3 rounded-btn hover:bg-base-100 active:bg-base-200 transition-all text-left"
+        >
+          <Dynamic component={props.icon} class="size-4 shrink-0" />
+
+          <div
+            class={`flex items-center overflow-hidden transition-all duration-300 ease-in-out ${props.isOpen || props.isMobile ? "w-40 opacity-100 translate-x-0 ml-3" : "w-0 opacity-0 -translate-x-2 pointer-events-none"}`}
+          >
+            <span class="whitespace-nowrap text-base-content">
+              {props.title}
+            </span>
+          </div>
+        </Tooltip.Trigger>
+
+        <Tooltip.Portal>
+          <Tooltip.Content class="tooltip tooltip-right bg-base-300 text-base-content px-3 py-1.5 rounded shadow-md">
+            {props.title}
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip>
     </li>
   );
 }
