@@ -4,7 +4,7 @@ import { For, JSX, Suspense, createSignal, createEffect } from "solid-js";
 import "./app.css";
 import { House, Info, PanelLeftOpen, X } from "lucide-solid";
 import { Dynamic } from "solid-js/web";
-import ThemeSelector from "./components/ThemeSelector";
+import ThemeSelector from "./shared/components/ThemeSelector";
 
 import { Dialog } from "@kobalte/core/dialog";
 import { Tooltip } from "@kobalte/core/tooltip";
