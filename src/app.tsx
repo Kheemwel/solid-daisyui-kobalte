@@ -129,7 +129,7 @@ function SidebarContent(props: {
   const links = [
     { title: "Home", url: "/", icon: House },
     { title: "About", url: "/about", icon: Info },
-    { title: "Button", url: "/demo/button", icon: MonitorPlay },
+    { title: "Button", url: "/components/button", icon: MonitorPlay },
   ];
 
   const handleLinkClick = (url: string) => {
