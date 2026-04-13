@@ -1,29 +1,53 @@
 import { Button as KobalteButton } from "@kobalte/core/button";
 import { splitProps, JSX } from "solid-js";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "../../utils";
 
-type ButtonProps = {
-  variant?:
-    | "outline"
-    | "ghost"
-    | "soft"
-    | "active"
-    | "wide"
-    | "dash"
-    | "link"
-    | "block";
-  color?:
-    | "primary"
-    | "secondary"
-    | "accent"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "neutral";
-  size?: "xs" | "sm" | "lg" | "xl";
-  shape?: "square" | "circle";
-  class?: string;
-} & JSX.ButtonHTMLAttributes<HTMLButtonElement>;
+export const buttonVariants = cva(
+  "btn",
+  {
+    variants: {
+      variant: {
+        outline: "btn-outline",
+        ghost: "btn-ghost",
+        soft: "btn-soft",
+        active: "btn-active",
+        wide: "btn-wide",
+        dash: "btn-dash",
+        link: "btn-link",
+        block: "btn-block",
+      },
+      color: {
+        primary: "btn-primary",
+        secondary: "btn-secondary",
+        accent: "btn-accent",
+        info: "btn-info",
+        success: "btn-success",
+        warning: "btn-warning",
+        error: "btn-error",
+        neutral: "btn-neutral",
+      },
+      size: {
+        xs: "btn-xs",
+        sm: "btn-sm",
+        lg: "btn-lg",
+        xl: "btn-xl",
+      },
+      shape: {
+        square: "btn-square",
+        circle: "btn-circle",
+      },
+    },
+    defaultVariants: {
+      // You can define default styles here
+    },
+  }
+);
+
+export type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> &
+  VariantProps<typeof buttonVariants> & {
+    class?: string;
+  };
 
 export default function Button(props: ButtonProps) {
   const [local, others] = splitProps(props, [
@@ -35,45 +59,19 @@ export default function Button(props: ButtonProps) {
     "children",
   ]);
 
-  // Map props to full class strings so Tailwind JIT can "see" them
-  const variantMap = {
-    outline: "btn-outline",
-    ghost: "btn-ghost",
-    soft: "btn-soft",
-    active: "btn-active",
-    wide: "btn-wide",
-    dash: "btn-dash",
-    link: "btn-link",
-    block: "btn-block",
-  };
-
-  const colorMap = {
-    primary: "btn-primary",
-    secondary: "btn-secondary",
-    accent: "btn-accent",
-    info: "btn-info",
-    success: "btn-success",
-    warning: "btn-warning",
-    error: "btn-error",
-    neutral: "btn-neutral",
-  };
-
-  const sizeMap = { xs: "btn-xs", sm: "btn-sm", lg: "btn-lg", xl: "btn-xl" };
-  const shapeMap = { square: "btn-square", circle: "btn-circle" };
-
-  const classList = [
-    "btn",
-    local.variant && variantMap[local.variant],
-    local.color && colorMap[local.color],
-    local.size && sizeMap[local.size],
-    local.shape && shapeMap[local.shape],
-    local.class,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
   return (
-    <KobalteButton {...others} class={classList}>
+    <KobalteButton
+      {...others}
+      class={cn(
+        buttonVariants({
+          variant: local.variant,
+          color: local.color,
+          size: local.size,
+          shape: local.shape,
+        }),
+        local.class
+      )}
+    >
       {local.children}
     </KobalteButton>
   );
