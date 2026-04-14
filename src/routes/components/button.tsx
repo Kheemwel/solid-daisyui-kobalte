@@ -174,6 +174,13 @@ export default function ButtonDemo() {
           Star <Star class="size-4" />
         </Button>
       </DemoSection>
+
+      <DemoSection title="Buttons as Link">
+        <Button href="/">I'm A Link</Button>
+        <Button variant={"link"} href="/">
+          Click Me
+        </Button>
+      </DemoSection>
     </div>
   );
 }
