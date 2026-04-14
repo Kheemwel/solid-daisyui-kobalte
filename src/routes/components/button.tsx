@@ -1,23 +1,23 @@
 import { Heart, Star } from "lucide-solid";
-import { JSX } from "solid-js";
 import Button from "~/shared/components/ui/Button";
+import DemoSection from "~/shared/components/DemoSection";
 
 export default function ButtonDemo() {
   return (
     <div class="p-4 pb-24 flex flex-col gap-10">
-      <ButtonDemoSection title="Button">
+      <DemoSection title="Button">
         <Button>Default</Button>
-      </ButtonDemoSection>
+      </DemoSection>
 
-      <ButtonDemoSection title="Buttons Sizes">
+      <DemoSection title="Buttons Sizes">
         <Button size="xs">Extra Small</Button>
         <Button size="sm">Small</Button>
         <Button>Medium</Button>
         <Button size="lg">Large</Button>
         <Button size="xl">Extra Large</Button>
-      </ButtonDemoSection>
+      </DemoSection>
 
-      <ButtonDemoSection title="Buttons Colors">
+      <DemoSection title="Buttons Colors">
         <Button color="neutral">Neutral</Button>
         <Button color="primary">Primary</Button>
         <Button color="secondary">Secondary</Button>
@@ -26,9 +26,9 @@ export default function ButtonDemo() {
         <Button color="success">Success</Button>
         <Button color="warning">Warning</Button>
         <Button color="error">Error</Button>
-      </ButtonDemoSection>
+      </DemoSection>
 
-      <ButtonDemoSection title="Soft Buttons">
+      <DemoSection title="Soft Buttons">
         <Button variant="soft">Default</Button>
         <Button variant="soft" color="neutral">
           Neutral
@@ -54,9 +54,9 @@ export default function ButtonDemo() {
         <Button variant="soft" color="error">
           Error
         </Button>
-      </ButtonDemoSection>
+      </DemoSection>
 
-      <ButtonDemoSection title="Outline Buttons">
+      <DemoSection title="Outline Buttons">
         <Button variant="outline">Default</Button>
         <Button variant="outline" color="neutral">
           Neutral
@@ -82,9 +82,9 @@ export default function ButtonDemo() {
         <Button variant="outline" color="error">
           Error
         </Button>
-      </ButtonDemoSection>
+      </DemoSection>
 
-      <ButtonDemoSection title="Dash Buttons">
+      <DemoSection title="Dash Buttons">
         <Button variant="dash">Default</Button>
         <Button variant="dash" color="neutral">
           Neutral
@@ -110,9 +110,9 @@ export default function ButtonDemo() {
         <Button variant="dash" color="error">
           Error
         </Button>
-      </ButtonDemoSection>
+      </DemoSection>
 
-      <ButtonDemoSection title="Active Buttons">
+      <DemoSection title="Active Buttons">
         <Button variant="active">Default</Button>
         <Button variant="active" color="neutral">
           Neutral
@@ -138,53 +138,42 @@ export default function ButtonDemo() {
         <Button variant="active" color="error">
           Error
         </Button>
-      </ButtonDemoSection>
+      </DemoSection>
 
-      <ButtonDemoSection title="Button Ghost and Button Link">
+      <DemoSection title="Button Ghost and Button Link">
         <Button variant="ghost">Ghost</Button>
         <Button variant="link">Link</Button>
-      </ButtonDemoSection>
+      </DemoSection>
 
-      <ButtonDemoSection title="Wide Button">
+      <DemoSection title="Wide Button">
         <Button variant="wide">Wide</Button>
-      </ButtonDemoSection>
+      </DemoSection>
 
-      <ButtonDemoSection title="Block Button">
+      <DemoSection title="Block Button">
         <Button variant="block">Block</Button>
-      </ButtonDemoSection>
+      </DemoSection>
 
-      <ButtonDemoSection title="Square Button and Circle Button">
+      <DemoSection title="Square Button and Circle Button">
         <Button shape="square">
           <Heart />
         </Button>
         <Button shape="circle">
           <Star />
         </Button>
-      </ButtonDemoSection>
+      </DemoSection>
 
-      <ButtonDemoSection title="Disabled Button">
+      <DemoSection title="Disabled Button">
         <Button disabled={true}>Disabled</Button>
-      </ButtonDemoSection>
+      </DemoSection>
 
-      <ButtonDemoSection title="Buttons with Icon">
+      <DemoSection title="Buttons with Icon">
         <Button>
           <Heart class="size-4" /> Heart
         </Button>
         <Button>
           Star <Star class="size-4" />
         </Button>
-      </ButtonDemoSection>
-    </div>
-  );
-}
-
-function ButtonDemoSection(props: { title: string; children: JSX.Element }) {
-  return (
-    <div class="flex flex-col gap-4 items-start">
-      <p class="text-lg font-bold">{props.title}</p>
-      <div class="w-full rounded p-6 border border-base-content flex flex-row justify-center items-center gap-4">
-        {props.children}
-      </div>
+      </DemoSection>
     </div>
   );
 }
